@@ -30,6 +30,9 @@ const texts = {
     ]
 };
 
+let startTime;
+let endTime;
+
 // Function to get a random text based on difficulty level
 function getRandomText(difficulty) {
     const levelTexts = texts[difficulty];
@@ -42,9 +45,60 @@ document.getElementById('difficultySelect').addEventListener('change', function(
     updateTextBasedOnDifficulty(event.target.value);
 });
 
+// Event listener for the start button
+document.getElementById('startButton').addEventListener('click', startTest);
+
+// Event listener for the stop button
+document.getElementById('stopButton').addEventListener('click', stopTest);
+
 function updateTextBasedOnDifficulty(selectedDifficulty) {
     const newRandomText = getRandomText(selectedDifficulty);
     document.getElementById('testParagraph').innerText = newRandomText;
+    document.getElementById('resultDifficulty').innerText = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+}
+
+// Function to start the typing test
+function startTest() {
+    startTime = new Date();
+    document.getElementById('startButton').disabled = true;
+    document.getElementById('stopButton').disabled = false;
+    document.getElementById('userInput').focus();
+}
+
+// Function to stop the typing test
+function stopTest() {
+    endTime = new Date();
+    const timeTaken = (endTime - startTime) / 1000; // Time in seconds
+    document.getElementById('resultTime').innerText = timeTaken.toFixed(2);
+    document.getElementById('startButton').disabled = false;
+    document.getElementById('stopButton').disabled = true;
+
+    const userInput = document.getElementById('userInput').value.trim();
+    const testParagraph = document.getElementById('testParagraph').value.trim();
+    const correctWords = countCorrectWords(userInput, testParagraph);
+    const wpm = calculateWPM(correctWords, timeTaken);
+    document.getElementById('resultWPM').innerText = wpm;
+}
+
+// Function to count the number of correctly typed words
+function countCorrectWords(userInput, testParagraph) {
+    const userWords = userInput.split(' ');
+    const testWords = testParagraph.split(' ');
+    let correctWordCount = 0;
+
+    for (let i = 0; i < userWords.length; i++) {
+        if (userWords[i] === testWords[i]) {
+            correctWordCount++;
+        }
+    }
+
+    return correctWordCount;
+}
+
+// Function to calculate WPM
+function calculateWPM(correctWords, timeTaken) {
+    const minutes = timeTaken / 60;
+    return Math.round(correctWords / minutes);
 }
 
 const difficulty = 'easy'; // This can be 'easy', 'medium', 'hard', or 'expert'
