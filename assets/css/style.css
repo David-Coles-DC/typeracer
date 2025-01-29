@@ -1,0 +1,8 @@
+header {
+    background-color: #ff8400;
+}
+
+#results,
+#test-controls .btn {
+    box-shadow: 0 0 10px #ff8400;
+}
