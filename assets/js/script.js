@@ -51,10 +51,14 @@ document.getElementById('startButton').addEventListener('click', startTest);
 // Event listener for the stop button
 document.getElementById('stopButton').addEventListener('click', stopTest);
 
+// Event listener for the retry button
+document.querySelector('#test-controls .btn:nth-child(3)').addEventListener('click', retryTest);
+
 function updateTextBasedOnDifficulty(selectedDifficulty) {
     const newRandomText = getRandomText(selectedDifficulty);
     document.getElementById('testParagraph').innerText = newRandomText;
     document.getElementById('resultDifficulty').innerText = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
+    resetResults();
 }
 
 // Function to start the typing test
@@ -62,6 +66,7 @@ function startTest() {
     startTime = new Date();
     document.getElementById('startButton').disabled = true;
     document.getElementById('stopButton').disabled = false;
+    document.getElementById('userInput').value = ''; // Clear the user input
     document.getElementById('userInput').focus();
 }
 
@@ -78,6 +83,12 @@ function stopTest() {
     const correctWords = countCorrectWords(userInput, testParagraph);
     const wpm = calculateWPM(correctWords, timeTaken);
     document.getElementById('resultWPM').innerText = wpm;
+}
+
+// Function to retry the typing test
+function retryTest() {
+    resetResults();
+    startTest();
 }
 
 // Function to count the number of correctly typed words
@@ -99,6 +110,12 @@ function countCorrectWords(userInput, testParagraph) {
 function calculateWPM(correctWords, timeTaken) {
     const minutes = timeTaken / 60;
     return Math.round(correctWords / minutes);
+}
+
+// Function to reset the results
+function resetResults() {
+    document.getElementById('resultTime').innerText = '0';
+    document.getElementById('resultWPM').innerText = '0';
 }
 
 const difficulty = 'easy'; // This can be 'easy', 'medium', 'hard', or 'expert'
