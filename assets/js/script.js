@@ -54,11 +54,21 @@ document.getElementById('stopButton').addEventListener('click', stopTest);
 // Event listener for the retry button
 document.querySelector('#test-controls .btn:nth-child(3)').addEventListener('click', retryTest);
 
+// Event listener for the user input
+document.getElementById('userInput').addEventListener('input', highlightText);
+
+// Event listener for the instructions button
+document.querySelector('header .btn').addEventListener('click', function() {
+    const instructionsModal = new bootstrap.Modal(document.getElementById('instructionsModal'));
+    instructionsModal.show();
+});
+
 function updateTextBasedOnDifficulty(selectedDifficulty) {
     const newRandomText = getRandomText(selectedDifficulty);
     document.getElementById('testParagraph').innerText = newRandomText;
     document.getElementById('resultDifficulty').innerText = selectedDifficulty.charAt(0).toUpperCase() + selectedDifficulty.slice(1);
     resetResults();
+    disableTestParagraph();
 }
 
 // Function to start the typing test
@@ -67,6 +77,7 @@ function startTest() {
     document.getElementById('startButton').disabled = true;
     document.getElementById('stopButton').disabled = false;
     document.getElementById('userInput').value = ''; // Clear the user input
+    enableTestParagraph();
     document.getElementById('userInput').focus();
 }
 
@@ -77,12 +88,17 @@ function stopTest() {
     document.getElementById('resultTime').innerText = timeTaken.toFixed(2);
     document.getElementById('startButton').disabled = false;
     document.getElementById('stopButton').disabled = true;
+    document.getElementById('userInput').disabled = true;
 
     const userInput = document.getElementById('userInput').value.trim();
-    const testParagraph = document.getElementById('testParagraph').value.trim();
+    const testParagraph = stripHTML(document.getElementById('testParagraph').innerHTML.trim());
     const correctWords = countCorrectWords(userInput, testParagraph);
+    const totalWords = testParagraph.split(' ').length;
+    const accuracy = calculateAccuracy(correctWords, totalWords);
     const wpm = calculateWPM(correctWords, timeTaken);
     document.getElementById('resultWPM').innerText = wpm;
+    document.getElementById('resultAccuracy').innerText = Math.ceil(accuracy);
+    disableTestParagraph();
 }
 
 // Function to retry the typing test
@@ -93,8 +109,13 @@ function retryTest() {
 
 // Function to count the number of correctly typed words
 function countCorrectWords(userInput, testParagraph) {
+    // Remove any HTML tags from the testParagraph
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = testParagraph;
+    const cleanTestParagraph = tempDiv.textContent || tempDiv.innerText || '';
+
     const userWords = userInput.split(' ');
-    const testWords = testParagraph.split(' ');
+    const testWords = cleanTestParagraph.split(' ');
     let correctWordCount = 0;
 
     for (let i = 0; i < userWords.length; i++) {
@@ -112,10 +133,64 @@ function calculateWPM(correctWords, timeTaken) {
     return Math.round(correctWords / minutes);
 }
 
+// Function to calculate accuracy
+function calculateAccuracy(correctWords, totalWords) {
+    return (correctWords / totalWords) * 100;
+}
+
 // Function to reset the results
 function resetResults() {
     document.getElementById('resultTime').innerText = '0';
     document.getElementById('resultWPM').innerText = '0';
+}
+
+// Function to strip HTML tags from a string
+function stripHTML(html) {
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = html;
+    return tempDiv.textContent || tempDiv.innerText || '';
+}
+
+// Function to highlight the text as the user types
+function highlightText() {
+    const userInput = document.getElementById('userInput').value.trim();
+    const testParagraph = stripHTML(document.getElementById('testParagraph').innerHTML.trim());
+    const userWords = userInput.split(' ');
+    const testWords = testParagraph.split(' ');
+
+    let highlightedText = '';
+    let allCorrect = true;
+
+    for (let i = 0; i < testWords.length; i++) {
+        if (i < userWords.length) {
+            if (userWords[i] === testWords[i]) {
+                highlightedText += `<span style="color: blue;">${testWords[i]}</span> `;
+            } else {
+                highlightedText += `<span style="color: red;">${testWords[i]}</span> `;
+                allCorrect = false;
+            }
+        } else {
+            highlightedText += `${testWords[i]} `;
+            allCorrect = false;
+        }
+    }
+
+    document.getElementById('testParagraph').innerHTML = highlightedText.trim();
+
+    // Automatically stop the test if all words are correct
+    if (allCorrect && userWords.length === testWords.length) {
+        stopTest();
+    }
+}
+
+// Function to disable the test paragraph
+function disableTestParagraph() {
+    document.getElementById('userInput').disabled = true;
+}
+
+// Function to enable the test paragraph
+function enableTestParagraph() {
+    document.getElementById('userInput').disabled = false;
 }
 
 const difficulty = 'easy'; // This can be 'easy', 'medium', 'hard', or 'expert'

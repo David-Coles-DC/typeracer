@@ -24,7 +24,7 @@
     <main>
         <header class="text-center py-4">
             <h1 class="text-white">TypeRacer</h1>
-            <button class="btn btn-light mt-2">Instructions</button>
+            <button class="btn btn-light mt-2" data-bs-toggle="modal" data-bs-target="#instructionsModal">Instructions</button>
         </header>
         <section>
             <div class="container">
@@ -40,14 +40,12 @@
                             </select>
                         </div>
                         <p class="fs-4">Test your typing speed by typing the text shown below:</p>
-                        <textarea
-                            class="form-control"
+                        <div
+                            class="form-control bg-light p-3"
                             id="testParagraph"
-                            rows="5"
-                            readonly
                         >
                             <!-- The text here will be filled by JavaScript -->
-                        </textarea>
+                        </div>
                         <textarea
                             class="form-control mt-3"
                             id="userInput"
@@ -66,6 +64,7 @@
                             <p>Level: <span id="resultDifficulty">Easy</span></p>
                             <p>Time: <span id="resultTime">0</span>s</p>
                             <p>WPM: <span id="resultWPM">0</span></p>
+                            <p>Accuracy: <span id="resultAccuracy">0</span>%</p>
                         </div>
                     </div>
                 </div>
@@ -75,6 +74,31 @@
 
         </footer>
     </main>
+
+    <!-- Instructions Modal -->
+    <div class="modal fade" id="instructionsModal" tabindex="-1" aria-labelledby="instructionsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="instructionsModalLabel">Instructions</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>Welcome to TypeRacer! Follow these instructions to use the typing test:</p>
+                    <ol>
+                        <li>Select the difficulty level from the dropdown menu.</li>
+                        <li>Click the "Start" button to begin the test.</li>
+                        <li>Type the text shown in the paragraph as quickly and accurately as possible.</li>
+                        <li>Click the "Stop" button to end the test and see your results.</li>
+                        <li>Click the "Retry" button to start the test again with the same difficulty level and text.</li>
+                    </ol>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
