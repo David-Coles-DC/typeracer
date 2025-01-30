@@ -96,8 +96,10 @@ function stopTest() {
     const totalWords = testParagraph.split(' ').length;
     const accuracy = calculateAccuracy(correctWords, totalWords);
     const wpm = calculateWPM(correctWords, timeTaken);
+    const selectedDifficulty = document.getElementById('difficultySelect').value;
     document.getElementById('resultWPM').innerText = wpm;
     document.getElementById('resultAccuracy').innerText = Math.ceil(accuracy);
+    updateBestScores(selectedDifficulty, timeTaken, wpm, accuracy);
     disableTestParagraph();
 }
 
@@ -109,13 +111,8 @@ function retryTest() {
 
 // Function to count the number of correctly typed words
 function countCorrectWords(userInput, testParagraph) {
-    // Remove any HTML tags from the testParagraph
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = testParagraph;
-    const cleanTestParagraph = tempDiv.textContent || tempDiv.innerText || '';
-
     const userWords = userInput.split(' ');
-    const testWords = cleanTestParagraph.split(' ');
+    const testWords = testParagraph.split(' ');
     let correctWordCount = 0;
 
     for (let i = 0; i < userWords.length; i++) {
@@ -142,6 +139,7 @@ function calculateAccuracy(correctWords, totalWords) {
 function resetResults() {
     document.getElementById('resultTime').innerText = '0';
     document.getElementById('resultWPM').innerText = '0';
+    document.getElementById('resultAccuracy').innerText = '0';
 }
 
 // Function to strip HTML tags from a string
@@ -193,5 +191,37 @@ function enableTestParagraph() {
     document.getElementById('userInput').disabled = false;
 }
 
+// Function to update the best scores
+function updateBestScores(difficulty, time, wpm, accuracy) {
+    const bestScores = JSON.parse(localStorage.getItem('bestScores')) || {};
+    const currentBest = bestScores[difficulty] || { time: Infinity, wpm: 0, accuracy: 0 };
+
+    if (
+        time < currentBest.time ||
+        (time === currentBest.time && wpm > currentBest.wpm) ||
+        (time === currentBest.time && wpm === currentBest.wpm && accuracy > currentBest.accuracy)
+    ) {
+        bestScores[difficulty] = { time, wpm, accuracy };
+        localStorage.setItem('bestScores', JSON.stringify(bestScores));
+        displayBestScores();
+    }
+}
+
+// Function to display the best scores
+function displayBestScores() {
+    const bestScores = JSON.parse(localStorage.getItem('bestScores')) || {};
+    document.getElementById('bestEasy').innerText = formatBestScore(bestScores.easy);
+    document.getElementById('bestMedium').innerText = formatBestScore(bestScores.medium);
+    document.getElementById('bestHard').innerText = formatBestScore(bestScores.hard);
+    document.getElementById('bestExpert').innerText = formatBestScore(bestScores.expert);
+}
+
+// Function to format the best score for display
+function formatBestScore(score) {
+    if (!score) return 'N/A';
+    return `Time: ${score.time.toFixed(2)}s, WPM: ${score.wpm}, Accuracy: ${score.accuracy.toFixed(2)}%`;
+}
+
 const difficulty = 'easy'; // This can be 'easy', 'medium', 'hard', or 'expert'
 updateTextBasedOnDifficulty(difficulty);
+displayBestScores();

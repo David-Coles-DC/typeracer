@@ -3,6 +3,7 @@ header {
 }
 
 #results,
+#bestScores,
 #test-controls .btn {
     box-shadow: 0 0 10px #ff8400;
 }
