@@ -6,8 +6,9 @@ Welcome to TypeRacer, a type speed test project designed to help you improve you
 
 - **Typing Speed Test:** Measure your typing speed in words per minute (WPM).
 - **Accuracy Tracking:** Keep track of your typing accuracy.
-- **Multiple Texts:** Choose from a variety of texts to type.
+- **Multiple Texts:** Choose from a variety of texts to type by selecting a difficulty level.
 - **Real-time Feedback:** Get instant feedback on your typing performance.
+- **Best Scores:** See your best scores and try to better them.
 
 ## Deployment
 
